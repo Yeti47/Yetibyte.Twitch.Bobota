@@ -60,7 +60,11 @@ namespace Yetibyte.Twitch.Bobota
             }
         }
 
-        public override string ToString() => Serialize();
+        public override string ToString()
+        {
+            BobotaConfig cloneConfig = this with { OAuthToken = "***************" };
+            return cloneConfig.Serialize();
+        }
 
         public string Serialize() => JsonSerializer.Serialize(this, GetType(), new JsonSerializerOptions { WriteIndented = true });
 
