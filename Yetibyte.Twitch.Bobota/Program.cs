@@ -62,6 +62,11 @@ namespace Yetibyte.Twitch.Bobota
 
             bot.Stop();
 
+            Console.WriteLine();
+            Console.WriteLine("App stopped. Hit any key to close.");
+
+            Console.ReadKey(true);
+
         }
 
         private static BobotaConfig LoadConfig()
