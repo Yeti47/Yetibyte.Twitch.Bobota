@@ -59,7 +59,15 @@ The following variables are available:
 | {COMMAND} | The command that triggers the bot. |
 | {COMPETING_BOT_NAME} | Twitch user name of another bot that this bot should interact with. |
 
+### Important Note
+
+The OAuth token is used to authenticate requests to the Twitch API. It allows the app to interact with Twitch on behalf of the Twitch account provided in the configuration. **Never share your OAuth token with anyone!** Make sure to keep your token private, as anyone in posession of the token will be able to authenticate as the associated Twitch user until the token is invalidated.
+
 ### Test Mode
 
 If the configuration property IsTestMode is set to *true*, the bot will not actually send messages to the Twitch chat.
 Instead, potential outbound messages are logged to the console.
+
+## License
+
+This project is available under the MIT license.
