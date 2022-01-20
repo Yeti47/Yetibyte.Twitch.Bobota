@@ -60,7 +60,7 @@ namespace Yetibyte.Twitch.Bobota
                 System.Threading.Thread.Sleep(1);
             }
 
-            bot.Stop();
+            //bot.Stop();
 
             Console.WriteLine();
             Console.WriteLine("App stopped. Hit any key to close.");

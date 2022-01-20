@@ -46,13 +46,27 @@ namespace Yetibyte.Twitch.Bobota
             _client.OnError += client_OnError;
             _client.OnConnectionError += client_OnConnectionError;
             _client.OnNoPermissionError += client_OnNoPermissionError;
+            _client.OnJoinedChannel += client_OnJoinedChannel;
+            _client.OnFailureToReceiveJoinConfirmation += client_OnFailureToReceiveJoinConfirmation;
 
             _random = new Random();
         }
 
+        private void client_OnFailureToReceiveJoinConfirmation(object sender, TwitchLib.Client.Events.OnFailureToReceiveJoinConfirmationArgs e)
+        {
+            _logger?.LogError($"Client error. Failed to join channel {ChannelName}. Check credentials. {(!string.IsNullOrWhiteSpace(e.Exception?.Details) ? e.Exception?.Details : string.Empty)}");
+            IsRunning = false;
+        }
+
+        private void client_OnJoinedChannel(object sender, TwitchLib.Client.Events.OnJoinedChannelArgs e)
+        {
+            _logger?.LogInformation($"Bot joined Channel {ChannelName}.");
+            SendMessage(_config.Greeting);
+        }
+
         private void WebSocketClient_OnError(object sender, TwitchLib.Communication.Events.OnErrorEventArgs e)
         {
-            _logger?.LogError($"Web Socket error: {e.Exception?.Message}");
+            //_logger?.LogError($"Web Socket error: {e.Exception?.Message}");
         }
 
         private void client_OnNoPermissionError(object sender, EventArgs e)
@@ -73,7 +87,6 @@ namespace Yetibyte.Twitch.Bobota
         private void client_OnConnected(object sender, TwitchLib.Client.Events.OnConnectedArgs e)
         {
             _logger?.LogInformation("Connected.");
-            SendMessage(_config.Greeting);
         }
 
         private void client_OnDisconnected(object sender, TwitchLib.Communication.Events.OnDisconnectedEventArgs e)
@@ -141,7 +154,6 @@ namespace Yetibyte.Twitch.Bobota
             _client.Initialize(connectionCredentials, ChannelName);
 
             bool connected = _client.Connect();
-            connected &= _client.JoinedChannels?.Any() ?? false;
 
             if (connected)
                 _logger?.LogInformation(IsTestMode ? "Bot started in test mode." : "Bot started.");
