@@ -61,5 +61,5 @@ The following variables are available:
 
 ### Test Mode
 
-If the configuration property IsTestMode is set to /true/, the bot will not actually send messages to the Twitch chat.
+If the configuration property IsTestMode is set to *true*, the bot will not actually send messages to the Twitch chat.
 Instead, potential outbound messages are logged to the console.
