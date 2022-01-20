@@ -58,3 +58,8 @@ The following variables are available:
 | {BOT_NAME} | Twitch user name of the bot. |
 | {COMMAND} | The command that triggers the bot. |
 | {COMPETING_BOT_NAME} | Twitch user name of another bot that this bot should interact with. |
+
+### Test Mode
+
+If the configuration property IsTestMode is set to /true/, the bot will not actually send messages to the Twitch chat.
+Instead, potential outbound messages are logged to the console.
