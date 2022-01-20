@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="example.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="example.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="TwitchLib" Version="3.3.0" />
   </ItemGroup>
 
