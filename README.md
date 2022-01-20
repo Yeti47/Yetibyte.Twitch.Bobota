@@ -30,9 +30,9 @@ There is an example configuration file (example.config) included in the app dire
         "BotTwitchUserName": "SomeOtherBotsTwitchUserName",
         "Command": "!demotivation",
         "ReactionMessages": [ 
-        "Don't listen to {COMPETING_BOT_NAME}, {USER}!", 
-        "{COMPETING_BOT_NAME} is a liar, {USER}!" 
-      ]
+          "Don't listen to {COMPETING_BOT_NAME}, {USER}!", 
+          "{COMPETING_BOT_NAME} is a liar, {USER}!" 
+        ]
       },
       "Messages": [ 
         "{USER}, never give up!",
