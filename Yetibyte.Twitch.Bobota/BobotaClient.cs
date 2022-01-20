@@ -37,24 +37,49 @@ namespace Yetibyte.Twitch.Bobota
             _logger = logger;
 
             WebSocketClient webSocketClient = new WebSocketClient();
+            webSocketClient.OnError += WebSocketClient_OnError;
 
             _client = new TwitchClient(webSocketClient);
             _client.OnConnected += client_OnConnected;
             _client.OnDisconnected += client_OnDisconnected;
             _client.OnMessageReceived += client_OnMessageReceived;
             _client.OnError += client_OnError;
+            _client.OnConnectionError += client_OnConnectionError;
+            _client.OnNoPermissionError += client_OnNoPermissionError;
 
             _random = new Random();
         }
 
-        private void client_OnError(object sender, TwitchLib.Communication.Events.OnErrorEventArgs e)
+        private void WebSocketClient_OnError(object sender, TwitchLib.Communication.Events.OnErrorEventArgs e)
         {
-            _logger.LogError($"Client error: {e.Exception?.Message}");
+            _logger?.LogError($"Web Socket error: {e.Exception?.Message}");
         }
 
-        private void client_OnConnected(object sender, TwitchLib.Client.Events.OnConnectedArgs e) => SendMessage(_config.Greeting);
+        private void client_OnNoPermissionError(object sender, EventArgs e)
+        {
+            _logger?.LogError("Client permission error. Check OAuth token and user permissions.");
+        }
 
-        private void client_OnDisconnected(object sender, TwitchLib.Communication.Events.OnDisconnectedEventArgs e) => SendMessage(_config.GoodbyeMessage);
+        private void client_OnConnectionError(object sender, TwitchLib.Client.Events.OnConnectionErrorArgs e)
+        {
+            _logger?.LogError($"Connection error: {e.Error?.Message}");
+        }
+
+        private void client_OnError(object sender, TwitchLib.Communication.Events.OnErrorEventArgs e)
+        {
+            _logger?.LogError($"Client error: {e.Exception?.Message}");
+        }
+
+        private void client_OnConnected(object sender, TwitchLib.Client.Events.OnConnectedArgs e)
+        {
+            _logger?.LogInformation("Connected.");
+            SendMessage(_config.Greeting);
+        }
+
+        private void client_OnDisconnected(object sender, TwitchLib.Communication.Events.OnDisconnectedEventArgs e)
+        {
+            _logger?.LogInformation("Connection closed.");
+        }
 
         private void client_OnMessageReceived(object sender, TwitchLib.Client.Events.OnMessageReceivedArgs e)
         {
@@ -116,6 +141,7 @@ namespace Yetibyte.Twitch.Bobota
             _client.Initialize(connectionCredentials, ChannelName);
 
             bool connected = _client.Connect();
+            connected &= _client.JoinedChannels?.Any() ?? false;
 
             if (connected)
                 _logger?.LogInformation(IsTestMode ? "Bot started in test mode." : "Bot started.");
@@ -134,10 +160,23 @@ namespace Yetibyte.Twitch.Bobota
 
             message = PreprocessMessage(message, addressedUser, competingBot);
 
-            if (!IsTestMode)
-                _client.SendMessage(ChannelName, message);
+            bool isError = false;
 
-            _logger?.LogInformation("Message sent: " + message);
+            if (!IsTestMode)
+            { 
+                try
+                {
+                    _client.SendMessage(ChannelName, message);
+                }
+                catch(Exception ex)
+                {
+                    _logger?.LogError($"Error sending message: {ex.Message}.{Environment.NewLine}Possibly, there is a problem with the provided credentials (e. g. OAuth token is invalid).");
+                    isError = true;
+                }
+            }
+
+            if (!isError)
+                _logger?.LogInformation("Message sent: " + message);
         }
 
         private string PreprocessMessage(string message, string addressedUser = null, CompetingBotConfig competingBot = null)
@@ -156,7 +195,11 @@ namespace Yetibyte.Twitch.Bobota
             if (!IsRunning)
                 return false;
 
-            _client.Disconnect();
+            if (_client.IsConnected)
+            {
+                SendMessage(_config.GoodbyeMessage);
+                _client.Disconnect();
+            }
 
             IsRunning = false;
 
