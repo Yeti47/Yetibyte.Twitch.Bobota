@@ -52,8 +52,9 @@ Note: The property "CompetingBot" is optional. Either set it to null or leave it
 
 Messages can include a variety of variables that will be resolved at runtime. Variables names must be spelled in all caps and surrounded with braces.
 The following variables are available:
-
-{USER} - Name of the user the bot responds to.
-{BOT_NAME} - Twitch user name of the bot.
-{COMMAND} - The command that triggers the bot.
-{COMPETING_BOT_NAME} - Twitch user name of another bot that this bot should interact with.
+| Variable | Effect |
+|----------|--------|
+| {USER} | Name of the user the bot responds to. |
+| {BOT_NAME} | Twitch user name of the bot. |
+| {COMMAND} | The command that triggers the bot. |
+| {COMPETING_BOT_NAME} | Twitch user name of another bot that this bot should interact with. |
