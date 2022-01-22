@@ -165,12 +165,12 @@ namespace Yetibyte.Twitch.Bobota
             return connected;
         }
 
-        private void SendMessage(string message, string addressedUser = null, CompetingBotConfig competingBot = null)
+        private void SendMessage(string message, string addressedUser = null)
         {
             if (message is null)
                 return;
 
-            message = PreprocessMessage(message, addressedUser, competingBot);
+            message = PreprocessMessage(message, addressedUser);
 
             bool isError = false;
 
@@ -191,7 +191,7 @@ namespace Yetibyte.Twitch.Bobota
                 _logger?.LogInformation("Message sent: " + message);
         }
 
-        private string PreprocessMessage(string message, string addressedUser = null, CompetingBotConfig competingBot = null)
+        private string PreprocessMessage(string message, string addressedUser = null)
         {
             message = message
                 .Replace("{USER}", addressedUser ?? string.Empty)
