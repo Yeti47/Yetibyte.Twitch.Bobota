@@ -197,7 +197,7 @@ namespace Yetibyte.Twitch.Bobota
                 .Replace("{USER}", addressedUser ?? string.Empty)
                 .Replace("{BOT_NAME}", _config.BotTwitchUserName)
                 .Replace("{COMMAND}", _config.Command)
-                .Replace("{COMPETING_BOT_NAME}", competingBot?.BotTwitchUserName ?? string.Empty);
+                .Replace("{COMPETING_BOT_NAME}", _config.CompetingBot?.BotTwitchUserName ?? string.Empty);
 
             return message;
         }
