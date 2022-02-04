@@ -68,6 +68,29 @@ The OAuth token is used to authenticate requests to the Twitch API. It allows th
 If the configuration property IsTestMode is set to *true*, the bot will not actually send messages to the Twitch chat.
 Instead, potential outbound messages are logged to the console.
 
+## Advanced Configuration
+
+### Custom Message Source Classes
+
+Starting with version 1.2, **Bobota** now allows you to implement your own message sources in form of .NET classes. The **Bobota** assembly (Yetibyte.Twitch.Bobota.dll) includes an interface named **Yetibyte.Twitch.Bobota.IMessageSource**. This interface exposes the following members:
+
+    void Initialize();
+    string GetRandomMessage();
+    
+To implement your own logic for generating random messages, follow these simple steps:
+
+1. Create a new C# libary project.
+2. Reference the DLL file Yetibyte.Twitch.Bobota.dll included in the **Bobota** root directory.
+3. Create a class that implements the interface Yetibyte.Twitch.Bobota.IMessageSource. Make sure the class provides a parameterless default constructor.
+4. Implement initialization logic in the Initialize method.
+5. In the GetRandomMessage method, implement your own custom logic that returns a message for your bot to post.
+6. Build your project.
+7. Copy the built assembly into the folder /MessageSources inside your **Bobota** installation directory.
+8. In your bobota.config file add a property named "MessageSourceClass" and set its value to the **fully qualified type name** of your class.
+9. Run **Bobota**.
+
+The **Bobota** console application will output an error if it has trouble loading or initializing your custom message source class.
+
 ## License
 
 This project is available under the MIT license.
