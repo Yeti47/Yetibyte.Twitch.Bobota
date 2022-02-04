@@ -43,6 +43,9 @@ namespace Yetibyte.Twitch.Bobota
         public bool HasCompetingBot => !string.IsNullOrWhiteSpace(CompetingBot?.BotTwitchUserName);
 
         public string[] Messages { get; init; }
+        public string MessageSourceClass { get; set; }
+        public bool HasMessageSourceClass => !string.IsNullOrWhiteSpace(MessageSourceClass);
+
         public string Greeting { get; init; }
         public string GoodbyeMessage { get; init; }
 
@@ -124,7 +127,7 @@ namespace Yetibyte.Twitch.Bobota
                 isValid = false;
             }
 
-            if (Messages is null || Messages.Length <= 0)
+            if ((Messages is null || Messages.Length <= 0) && !HasMessageSourceClass)
             {
                 logger?.LogError($"No {nameof(Messages)} provided. Example: " + "{USER_NAME}, you are great!");
                 isValid = false;
@@ -151,7 +154,6 @@ namespace Yetibyte.Twitch.Bobota
 
             return isValid;
         }
-
 
     }
 }

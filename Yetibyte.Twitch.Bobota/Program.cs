@@ -49,9 +49,16 @@ namespace Yetibyte.Twitch.Bobota
 
             BobotaClient bot = new BobotaClient(config, _logger);
 
-            bot.Run();
+            bool didRun = bot.Run();
 
             Console.WriteLine();
+
+            if(!didRun)
+            {
+                Console.WriteLine("Error running bot. Please check your config!");
+                Console.ReadKey(true);
+                return;
+            }
 
             AppDomain.CurrentDomain.ProcessExit += (o, e) => bot.Stop();
 

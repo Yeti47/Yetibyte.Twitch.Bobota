@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
@@ -17,6 +20,7 @@ namespace Yetibyte.Twitch.Bobota
         private readonly Random _random;
 
         private string _lastUserRespondedTo;
+        private IMessageSource _messageSource;
 
         public string TwitchUserName => _config.BotTwitchUserName;
         public string AuthToken => _config.OAuthToken;
@@ -137,7 +141,11 @@ namespace Yetibyte.Twitch.Bobota
         {
             string message = FALLBACK_MESSAGE;
 
-            if (_config.Messages?.Any() ?? false)
+            if (_config.HasMessageSourceClass)
+            {
+                message = _messageSource.GetRandomMessage();
+            }
+            else if (_config.Messages?.Any() ?? false)
             {
                 message = _config.Messages[_random.Next(_config.Messages.Length)];
             }
@@ -149,6 +157,22 @@ namespace Yetibyte.Twitch.Bobota
         {
             if (IsRunning)
                 return false;
+
+            if (_config.HasMessageSourceClass)
+            {
+                _logger.LogInformation($"Custom message source configured. Will try to load message source class {_config.MessageSourceClass}.");
+                this._messageSource = this.CreateMessageSource();
+
+                if (this._messageSource is null)
+                {
+                    this._logger.LogError("Could not instantiate message source. Please check your configuration.");
+                    return false;
+                }
+                else
+                {
+                    _messageSource.Initialize();
+                }
+            }
 
             ConnectionCredentials connectionCredentials = new ConnectionCredentials(TwitchUserName, AuthToken);
             _client.Initialize(connectionCredentials, ChannelName);
@@ -163,6 +187,25 @@ namespace Yetibyte.Twitch.Bobota
             IsRunning = connected;
 
             return connected;
+        }
+
+        private IMessageSource CreateMessageSource()
+        {
+            IEnumerable<string> dllFileNames = System.IO.Directory.EnumerateFiles("./MessageSources", "*.dll");
+
+            foreach(string ddlFileName in dllFileNames)
+            {
+                Assembly messageSourceAssembly = Assembly.LoadFrom(ddlFileName);
+
+                Type messageSourceType = messageSourceAssembly.GetType(_config.MessageSourceClass);
+
+                if (messageSourceType != null && typeof(IMessageSource).IsAssignableFrom(messageSourceType))
+                {
+                    return Activator.CreateInstance(messageSourceType) as IMessageSource;
+                }
+            }
+
+            return null;
         }
 
         private void SendMessage(string message, string addressedUser = null)
