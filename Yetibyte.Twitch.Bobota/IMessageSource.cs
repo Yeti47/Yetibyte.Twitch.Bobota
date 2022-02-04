@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Yetibyte.Twitch.Bobota
 {
-    interface IMessageSource
+    public interface IMessageSource
     {
         void Initialize();
         string GetRandomMessage();
