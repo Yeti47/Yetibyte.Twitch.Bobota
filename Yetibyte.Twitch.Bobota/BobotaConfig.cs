@@ -44,6 +44,8 @@ namespace Yetibyte.Twitch.Bobota
 
         public string[] Messages { get; init; }
         public string MessageSourceClass { get; set; }
+
+        [JsonIgnore]
         public bool HasMessageSourceClass => !string.IsNullOrWhiteSpace(MessageSourceClass);
 
         public string Greeting { get; init; }
