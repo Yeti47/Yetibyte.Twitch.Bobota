@@ -91,6 +91,8 @@ To implement your own logic for generating random messages, follow these simple 
 
 The **Bobota** console application will output an error if it has trouble loading or initializing your custom message source class.
 
+You can find an example message source project [here](https://github.com/Yeti47/Yetibyte.Twitch.Bobota.MessageSources.Pokewiki).
+
 ## License
 
 This project is available under the MIT license.
