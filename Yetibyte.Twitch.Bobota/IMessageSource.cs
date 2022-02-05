@@ -9,6 +9,6 @@ namespace Yetibyte.Twitch.Bobota
     public interface IMessageSource
     {
         void Initialize();
-        string GetRandomMessage();
+        string GetRandomMessage(string command, string[] parameters);
     }
 }

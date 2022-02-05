@@ -106,13 +106,20 @@ namespace Yetibyte.Twitch.Bobota
 
                 string normalizedMessage = e.ChatMessage.Message?.ToLower()?.Trim() ?? string.Empty;
 
-                if (normalizedMessage.StartsWith(_config.Command, StringComparison.OrdinalIgnoreCase)) {
+                string[] words = normalizedMessage.Split(' ');
 
-                    PostResponse(e.ChatMessage);
+                if (!words.Any())
+                    return;
+
+                string command = words[0].Trim();
+
+                if (command.Equals(_config.Command, StringComparison.OrdinalIgnoreCase)) {
+
+                    PostResponse(e.ChatMessage, command, words.Skip(1).ToArray());
                 }
                 else if(_config.HasCompetingBot)
                 {
-                    if(normalizedMessage.StartsWith(_config.CompetingBot.Command, StringComparison.OrdinalIgnoreCase)) {
+                    if(command.Equals(_config.CompetingBot.Command, StringComparison.OrdinalIgnoreCase)) {
                         _lastUserRespondedTo = e.ChatMessage.Username;
                     }
                     else if(e.ChatMessage.Username.Equals(_config.CompetingBot.BotTwitchUserName, StringComparison.OrdinalIgnoreCase) 
@@ -137,13 +144,13 @@ namespace Yetibyte.Twitch.Bobota
             SendMessage(message, _lastUserRespondedTo);
         }
 
-        private void PostResponse(ChatMessage originalChatMessage)
+        private void PostResponse(ChatMessage originalChatMessage, string command, string[] parameters)
         {
             string message = FALLBACK_MESSAGE;
 
             if (_config.HasMessageSourceClass)
             {
-                message = _messageSource.GetRandomMessage();
+                message = _messageSource.GetRandomMessage(command, parameters);
             }
             else if (_config.Messages?.Any() ?? false)
             {
